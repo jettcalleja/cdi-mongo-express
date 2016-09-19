@@ -1,0 +1,51 @@
+{
+  "name": "cdi-mysql-express",
+  "version": "1.0.0",
+  "description": "Express MySQL Boilerplate",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm install && nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "apidoc -i controllers -o apidoc/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jettcalleja/cdi-mysql-express.git"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "boilerplate"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jettcalleja/cdi-mysql-express/issues"
+  },
+  "homepage": "https://github.com/jettcalleja/cdi-mysql-express#readme",
+  "dependencies": {
+    "anytv-node-cors": "0.0.7",
+    "anytv-node-importer": "0.0.0",
+    "apidoc": "^0.16.1",
+    "body-parser": "^1.15.2",
+    "cdi-mongo-connect": "0.0.1",
+    "compression": "^1.6.2",
+    "crypto": "0.0.3",
+    "express": "^4.14.0",
+    "file-stream-rotator": "0.0.7",
+    "helmet": "^2.1.2",
+    "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.15.0",
+    "method-override": "^2.3.6",
+    "mongodb": "^2.2.10",
+    "morgan": "^1.7.0",
+    "path": "^0.12.7",
+    "redis": "^2.6.2",
+    "winston": "^2.2.0",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "supertest": "^2.0.0"
+  }
+}

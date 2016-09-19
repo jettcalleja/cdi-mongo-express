@@ -1,0 +1,11 @@
+node_modules/
+apidoc/
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+dump.rdb
+config/env/local.js
