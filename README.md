@@ -1,4 +1,4 @@
-# `cdi-mysql-express`
+# `cdi-mongo-express`
 
 Requirements
 -----
