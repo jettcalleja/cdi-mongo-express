@@ -223,6 +223,16 @@ exports.retrieve = (req, res, next) => {
  * }
  */
 exports.retrieveById = (req, res, next) => {
+    const id = req.params.id;
+
+    let userId;
+
+    try {
+        userId = new ObjectId(id);
+    } catch (e) {
+        winston.error('Error in id parameter');
+        return next(e);
+    }
 
     function start () {
 
@@ -230,7 +240,7 @@ exports.retrieveById = (req, res, next) => {
 
         user
         .findOne(
-            {_id: new ObjectId(req.params.id)},
+            {_id: userId},
             send_response
         );
     }
@@ -301,7 +311,16 @@ exports.retrieveById = (req, res, next) => {
         .from(req.body);
 
     const user   = mongo.db.collection('user'),
-          userId = ObjectId(req.params.id);
+          id     = req.params.id;
+
+    let userId;
+
+    try {
+        userId = new ObjectId(id);
+    } catch (e) {
+        winston.error('Error in id parameter');
+        return next(e);
+    }
 
     function start() {
 
@@ -392,7 +411,16 @@ exports.retrieveById = (req, res, next) => {
 exports.delete = (req, res, next) => {
 
     const user   = mongo.db.collection('user'),
-          userId = ObjectId(req.params.id);
+          id     = req.params.id;
+
+    let userId;
+
+    try {
+        userId = new ObjectId(id);
+    } catch (e) {
+        winston.error('Error in id parameter');
+        return next(e);
+    }
 
     function start () {
 
