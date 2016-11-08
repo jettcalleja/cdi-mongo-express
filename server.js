@@ -3,6 +3,7 @@
 const config            = require(__dirname + '/config/config');
 const util              = require(__dirname + '/helpers/util');
 const web_socket        = require(__dirname + '/lib/web_socket');
+const redis_lib         = require(__dirname + '/lib/redisdb');
 const mongo             = require('cdi-mongo-connect');
 const body_parser       = require('body-parser');
 const winston           = require('winston');
@@ -13,6 +14,7 @@ const WebSocketServer   = require('ws').Server;
 let app,
     handler,
     server,
+    client,
     wss;
 
 function start() {
@@ -37,7 +39,8 @@ function start() {
     winston.level = config.LOG_LEVEL || 'silly';
 
     // set redis
-    app.use(require(__dirname + '/lib/redisdb')());
+    client          =  redis_lib.init();
+    app.use(redis_lib.connect(client));
 
     mongo.set_logger(winston)
          .connect(config.MONGODB);
