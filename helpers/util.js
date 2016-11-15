@@ -30,38 +30,16 @@ function get_data (sample, source, ref) {
 
     ref = ref || '';
 
-    function validate_primitive_value (sample, prop, source, source_prop, ref) {
-        let source_type = typeof source[source_prop];
-        const type = typeof sample[prop];
-
-        if (type === 'string' && sample[prop]) {
-            source_type = type;
-            source[source_prop] = sample[prop];
-        }
-
-        if ((source_type === 'undefined' && prop[0] !== '_') || (source_type === 'string' && !source[source_prop])) {
-            return new Error(ref + ' is missing');
-        }
-
-        if (source_type !== 'undefined' && source_type !== type) {
-            return new Error(ref + ' invalid type');
-        }
-
-        if (type === 'object') {
-            return get_data(sample[prop], source[source_prop], ref);
-        }
-
-        return source[source_prop];
-    }
-
     if (typeof sample !== typeof source || (Array.isArray(sample) !== Array.isArray(source))) {
         return new Error('Sample-Source type mismatch');
     }
 
-    if (Array.isArray(sample)) {
+    if (Array.isArray(sample) && sample.length) {
         temp = source.map((a, index) => {
-            const ret = validate_primitive_value(sample, 0, source, index, ref + `[${index}]`);
-            has_error = ret instanceof Error ? ret : false;
+            const ret = get_data(sample[0], source[index], ref + `[${index}]`);
+            if (ret instanceof Error) {
+                has_error = ret;
+            }
             return ret;
         });
 
@@ -79,8 +57,12 @@ function get_data (sample, source, ref) {
                 source_prop = prop.slice(1);
             }
 
-            data = validate_primitive_value(sample, prop, source, source_prop, (ref ? ref + '.' : '') + prop);
-
+            try {
+                data = validate_primitive_value(sample, prop, source, source_prop, (ref ? ref + '.' : '') + prop);
+            } catch (err) {
+                return err;
+            }
+            
             if (data instanceof Error) {
                 return data;
             }
@@ -92,6 +74,62 @@ function get_data (sample, source, ref) {
     }
 
     return final_data;
+}
+
+
+
+function validate_primitive_value (sample, prop, source, source_prop, ref) {
+    let   data,
+          source_type = typeof source[source_prop];
+    const type = typeof sample[prop];
+
+    if (type === 'string' && sample[prop]) {
+        source_type = type;
+        source[source_prop] = sample[prop];
+    }
+
+    if (type === 'number' && !isNaN(source[source_prop])) {
+        source_type = type;
+        source[source_prop] = Number(source[source_prop]);
+    }
+
+    if (source_type === 'string' && Array.isArray(sample[prop])) {
+        try {
+            source[source_prop] = JSON.parse(source[source_prop]);
+            source_type = type;
+        } catch (e) {
+            return new Error(ref + ' invalid type');
+        }
+    }
+
+    if (source_type === 'string' && type === 'boolean') {
+        source_type = type;
+        source[source_prop] = !!source[source_prop];
+    } 
+
+    if ((source_type === 'undefined' && prop[0] !== '_') || (prop[0] !== '_' &&
+        source_type !== 'string' && !source[source_prop] && source[source_prop] !== 0)
+        || (prop[0] !== '_' && source_type === 'string' && source[source_prop] === '') || 
+        (Array.isArray(sample[prop]) && prop[0] !== '_' 
+            && !source[source_prop].length)) {
+        return new Error(ref + ' is missing');
+    }
+
+    if (source_type !== 'undefined' && source[source_prop] !== null && 
+        source_type !== type && !Array.isArray(source)) {
+        return new Error(ref + ' invalid type');
+    }
+
+    if ((Array.isArray(sample[prop]) && sample[prop].length) ||
+        (type === 'object' && !Array.isArray(sample[prop])) ) {
+        
+        data = get_data(sample[prop], source[source_prop], ref);
+        if (data instanceof Error) {
+            throw data;
+        }        
+    }
+
+    return source[source_prop];
 }
 
 
