@@ -13,11 +13,11 @@ module.exports = (logger) => {
     return (err, req, res, next) => {
         const error = err.message || err.data || err;
 
+        logger.error(`${req.originalMethod}: ${req.url}`);
+
         if (!(err instanceof Error)) {
             err = new Error(err);
         }
-
-        logger.error(error);
 
         if (typeof error === 'object') {
             for (let key in error) {
@@ -25,6 +25,10 @@ module.exports = (logger) => {
                     logger.warn(key + ': ' + JSON.stringify(error[key]));
                 }
             }
+        }
+
+        if (err.stack && next) {
+            logger.error(err.stack);
         }
 
         return res.status(500)
